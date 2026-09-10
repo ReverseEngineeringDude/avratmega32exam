@@ -1,0 +1,128 @@
+.container {
+  margin-bottom: 2.5rem;
+}
+
+.heading {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 1.25rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 0.75rem;
+}
+
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.item {
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: var(--bg-primary);
+  overflow: hidden;
+  transition: all 0.2s ease;
+}
+
+.item:hover {
+  border-color: var(--accent);
+  box-shadow: 0 4px 12px rgba(79, 70, 229, 0.08);
+}
+
+.item.open {
+  border-color: var(--accent);
+  box-shadow: 0 4px 12px rgba(79, 70, 229, 0.1);
+}
+
+.question {
+  width: 100%;
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+  padding: 1.25rem;
+  background: none;
+  border: none;
+  text-align: left;
+  color: var(--text-primary);
+  transition: background-color 0.2s ease;
+}
+
+.question:hover {
+  background-color: rgba(79, 70, 229, 0.03);
+}
+
+.open .question {
+  background-color: rgba(79, 70, 229, 0.05);
+}
+
+.qNumber {
+  color: var(--accent);
+  font-weight: 800;
+  font-size: 1rem;
+}
+
+.qText {
+  flex: 1;
+  font-size: 1.05rem;
+  font-weight: 600;
+  line-height: 1.4;
+}
+
+.chevron {
+  color: var(--text-tertiary);
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), color 0.2s ease;
+  flex-shrink: 0;
+  margin-top: 0.1rem;
+}
+
+.open .chevron {
+  transform: rotate(180deg);
+  color: var(--accent);
+}
+
+.answer {
+  padding: 0 1.25rem;
+  color: var(--text-secondary);
+  line-height: 1.6;
+  max-height: 0;
+  opacity: 0;
+  overflow: hidden;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  background-color: var(--bg-primary);
+}
+
+.open .answer {
+  padding: 0 1.25rem 1.25rem;
+  max-height: 1000px;
+  opacity: 1;
+  border-top: 1px solid rgba(79, 70, 229, 0.1);
+  margin-top: 0.5rem;
+  padding-top: 1rem;
+}
+
+.memorizeLabel {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 1rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  cursor: pointer;
+}
+
+.checkbox {
+  display: none;
+}
+
+.memorizedIcon {
+  color: var(--success);
+}
+
+.notMemorizedIcon {
+  color: var(--text-tertiary);
+}
