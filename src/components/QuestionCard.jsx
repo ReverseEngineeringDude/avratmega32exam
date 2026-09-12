@@ -14,7 +14,7 @@ const categoryColors = {
   'Interrupts': '#8338ec',
 };
 
-const QuestionCard = ({ question, isReviewed, onToggleReview }) => {
+const QuestionCard = ({ question, isReviewed, onToggleReview, displayTitle, isFairMode }) => {
   const tagColor = categoryColors[question.category] || '#4361ee';
 
   return (
@@ -40,8 +40,8 @@ const QuestionCard = ({ question, isReviewed, onToggleReview }) => {
         </button>
       </div>
 
-      <Link to={`/question/${question.id}`} className={styles.cardLink}>
-        <h3 className={styles.title}>{question.title}</h3>
+      <Link to={`/question/${question.id}${isFairMode ? '?mode=fair' : ''}`} className={styles.cardLink}>
+        <h3 className={styles.title}>{displayTitle || question.title}</h3>
         <p className={styles.statement}>
           {question.problemStatement?.substring(0, 120)}
           {question.problemStatement?.length > 120 ? '...' : ''}

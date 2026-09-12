@@ -9,7 +9,7 @@ const questions = [
     isFair: true,
     problemStatement:
       "Familiarize with the ATmega32 microcontroller-based development system board and Atmel Studio IDE. Write an Embedded C program to blink all 8 LEDs connected to PORTB by toggling them ON and OFF with a software delay loop.",
-    circuitImageUrl: "",
+    circuitImageUrl: "/exp1.SVG",
     pinConnections: [
       { mcuPin: "PB0 (Pin 1)", component: "LED 1 Anode (via 330Ω resistor to Vcc)" },
       { mcuPin: "PB1 (Pin 2)", component: "LED 2 Anode (via 330Ω resistor to Vcc)" },
@@ -30,19 +30,19 @@ const questions = [
 
 int main(void)
 {
-    unsigned int i;
+    volatile unsigned long i;
 
     DDRB = 0xFF;            // Configure all PORTB pins as output
 
-    for (i = 1; i < 3000; i++);   // Initial startup delay
+    for (i = 0; i < 30000; i++) { }   // Initial startup delay
 
     while (1)
     {
         PORTB = 0xFF;              // Turn ON all LEDs (all pins HIGH)
-        for (i = 1; i < 3000; i++);   // Delay — keep LEDs ON
+        for (i = 0; i < 30000; i++) { }   // Delay — keep LEDs ON
 
         PORTB = 0x00;              // Turn OFF all LEDs (all pins LOW)
-        for (i = 1; i < 3000; i++);   // Delay — keep LEDs OFF
+        for (i = 0; i < 30000; i++) { }   // Delay — keep LEDs OFF
     }
 
     return 0;
@@ -54,7 +54,7 @@ int main(void)
           "Includes the AVR I/O header file. This gives access to all register names like DDRB, PORTB, PINB, etc. specific to the ATmega32. Every AVR program starts with this include.",
       },
       {
-        line: "unsigned int i;",
+        line: "volatile unsigned long i;",
         explanation:
           "Declares a loop counter variable 'i' as unsigned integer (16-bit, range 0–65535 on AVR). Used for creating software delay loops.",
       },
@@ -64,9 +64,9 @@ int main(void)
           "Sets the Data Direction Register for PORTB to 0xFF (binary 11111111). This configures all 8 pins of PORTB (PB0–PB7) as OUTPUT. A '1' bit = output, a '0' bit = input.",
       },
       {
-        line: "for (i = 1; i < 3000; i++);",
+        line: "for (i = 0; i < 30000; i++) { }",
         explanation:
-          "A software delay loop — runs an empty loop 2999 times doing nothing. This creates a small time delay after the port configuration, giving the hardware time to stabilize before starting the blink cycle. The semicolon at the end means the loop body is empty.",
+          "A software delay loop — runs an empty loop 30000 times doing nothing. This creates a small time delay after the port configuration, giving the hardware time to stabilize before starting the blink cycle. The empty brackets {} mean the loop body is empty.",
       },
       {
         line: "while (1)",
@@ -79,7 +79,7 @@ int main(void)
           "Writes 0xFF (binary 11111111) to PORTB, setting all 8 output pins to HIGH (+5V). This turns ON all 8 LEDs connected to PB0–PB7 simultaneously.",
       },
       {
-        line: "for (i = 1; i < 3000; i++);",
+        line: "for (i = 0; i < 30000; i++) { }",
         explanation:
           "Software delay after turning LEDs ON — keeps the LEDs in the ON state for a visible duration. The delay duration depends on the clock frequency (at 16 MHz, this is a very short delay).",
       },
@@ -89,7 +89,7 @@ int main(void)
           "Writes 0x00 (binary 00000000) to PORTB, setting all 8 output pins to LOW (0V). This turns OFF all 8 LEDs simultaneously.",
       },
       {
-        line: "for (i = 1; i < 3000; i++);",
+        line: "for (i = 0; i < 30000; i++) { }",
         explanation:
           "Software delay after turning LEDs OFF — keeps the LEDs in the OFF state for a visible duration before the loop repeats and turns them ON again. This creates the blinking effect.",
       },
@@ -108,7 +108,7 @@ int main(void)
         note: "Writes LOW (logic 0) to all PORTB pins — turns all connected LEDs OFF.",
       },
       {
-        snippet: "for (i = 1; i < 3000; i++);",
+        snippet: "for (i = 0; i < 30000; i++) { }",
         note: "Software delay loop — an empty for-loop used to waste CPU cycles and create a time delay without using library functions.",
       },
       {
@@ -160,10 +160,10 @@ int main(void)
     title: "Exp 02: Sending A Byte (0x0F) to PORTB of ATmega32",
     category: "Digital I/O",
     order: 2,
-    isFair: false,
+    isFair: true,
     problemStatement:
       "To write and execute an AVR C program for the ATmega32 MCU to send the byte 0x0F to PORTB and observe the output using LEDs in Proteus.",
-    circuitImageUrl: "",
+    circuitImageUrl: "/exp2.SVG",
     pinConnections: [
       { mcuPin: "PB0 (Pin 1)", component: "LED 1 Anode (ON) via 330Ω resistor to Vcc" },
       { mcuPin: "PB1 (Pin 2)", component: "LED 2 Anode (ON) via 330Ω resistor to Vcc" },
@@ -179,12 +179,12 @@ int main(void)
 
 int main(void)
 {
-    unsigned int i;
+    volatile unsigned long i;
 
     DDRB = 0xFF;                  // Configure all PORTB pins as output
     PORTB = 0x0F;                 // Send byte 0x0F (00001111) to PORTB
 
-    for (i = 1; i < 3000; i++);   // Optional delay
+    for (i = 0; i < 30000; i++) { }   // Optional delay
 
     while (1)
     {
@@ -203,7 +203,7 @@ int main(void)
         explanation: "Sends the hexadecimal value 0x0F to PORTB. In binary, 0x0F is 00001111. This means pins PB0, PB1, PB2, and PB3 (lower nibble) are set HIGH (1), turning their LEDs ON. Pins PB4, PB5, PB6, and PB7 (upper nibble) are set LOW (0), turning their LEDs OFF."
       },
       {
-        line: "for (i = 1; i < 3000; i++);",
+        line: "for (i = 0; i < 30000; i++) { }",
         explanation: "A simple software delay. Though not strictly necessary for a static output, it is often used in basic experiments to let the hardware stabilize or as a placeholder."
       },
       {
@@ -241,10 +241,10 @@ int main(void)
     title: "Exp 03: Input Operation — Read from PORTA, Display on PORTB",
     category: "Digital I/O",
     order: 3,
-    isFair: false,
+    isFair: true,
     problemStatement:
       "To write and execute an AVR C program to read data from PORTA (input) and display the same data on PORTB (output) of the ATmega32 MCU.",
-    circuitImageUrl: "",
+    circuitImageUrl: "/exp3.SVG",
     pinConnections: [
       { mcuPin: "PA0-PA7 (Pins 40-33)", component: "DIP Switches / Buttons (Input)" },
       { mcuPin: "PB0-PB7 (Pins 1-8)", component: "LEDs (Output)" },
@@ -306,20 +306,21 @@ int main(void)
     isFair: false,
     problemStatement:
       "To blink all LEDs connected to PORTB using a modular software delay function.",
-    circuitImageUrl: "",
+    circuitImageUrl: "/exp4.SVG",
     pinConnections: [
       { mcuPin: "PB0-PB7 (Pins 1-8)", component: "LEDs (Output)" },
     ],
     code: `#include <avr/io.h>
 
 // Function to generate a software delay
-void delay() 
+void delay(void)
 {
-    unsigned int i, j;
-    // Nested loop to create a longer, visible delay
-    for(i = 0; i < 1000; i++) {
-        for(j = 0; j < 100; j++); 
-    }
+	volatile unsigned long i;
+
+	for (i = 0; i < 30000; i++)
+	{
+		// Empty loop
+	}
 }
 
 int main(void) 
@@ -343,8 +344,8 @@ int main(void)
         explanation: "Defines a custom function named 'delay'. Creating a separate function keeps the main loop clean and promotes code reusability."
       },
       {
-        line: "for(i = 0; i < 1000; i++) { for(j = 0; j < 100; j++); }",
-        explanation: "A nested for-loop. The inner loop runs 100 times for every 1 iteration of the outer loop. This wastes CPU cycles to generate a noticeable time delay."
+        line: "for (i = 0; i < 30000; i++) { }",
+        explanation: "A single for-loop. This wastes CPU cycles to generate a noticeable time delay. The volatile keyword ensures it isn't optimized away."
       },
       {
         line: "delay();",
@@ -359,8 +360,8 @@ int main(void)
     ],
     vivaQuestions: [
       {
-        q: "Why do we use a nested loop in the delay function?",
-        a: "A single loop with an integer might not provide a long enough delay depending on the clock frequency. A nested loop multiplies the delay time, easily creating a delay of hundreds of milliseconds without overflowing the loop variable."
+        q: "Why is an unsigned long used for the delay loop instead of a nested loop?",
+        a: "An unsigned long can store large enough numbers to create significant delays in a single loop without overflowing."
       },
       {
         q: "What is the disadvantage of a software delay loop?",
@@ -373,39 +374,39 @@ int main(void)
     title: "Exp 05: Alternate LED Blinking",
     category: "Digital I/O",
     order: 5,
-    isFair: false,
+    isFair: true,
     problemStatement:
       "To blink alternate LEDs connected to PORTB using a software delay function.",
-    circuitImageUrl: "",
+    circuitImageUrl: "/exp5.SVG",
     pinConnections: [
       { mcuPin: "PB0-PB7 (Pins 1-8)", component: "LEDs (Output)" },
     ],
     code: `#include <avr/io.h>
 
-void delay() 
+void delay(void)
 {
-    unsigned int i, j;
-    for(i = 0; i < 1000; i++) {
-        for(j = 0; j < 100; j++); 
-    }
+	volatile unsigned long i;
+
+	for (i = 0; i < 30000; i++)
+	{
+		// Empty loop
+	}
 }
 
-int main(void) 
+int main(void)
 {
-    DDRB = 0xFF;    // Set PORTB as output
+	DDRB = 0xFF;   // Set PORTB as output
 
-    while (1) 
-    {
-        // 0xAA = 10101010 (Even LEDs OFF, Odd LEDs ON)
-        PORTB = 0xAA; 
-        delay();
+	while (1)
+	{
+		PORTB = 0xAA;   // 10101010
+		delay();
 
-        // 0x55 = 01010101 (Even LEDs ON, Odd LEDs OFF)
-        PORTB = 0x55; 
-        delay();
-    }
+		PORTB = 0x55;   // 01010101
+		delay();
+	}
 
-    return 0;
+	return 0;
 }`,
     codeExplanation: [
       {
@@ -442,18 +443,20 @@ int main(void)
     isFair: false,
     problemStatement:
       "To generate a running LED pattern (chaser) on PORTB.",
-    circuitImageUrl: "",
+    circuitImageUrl: "/exp6.SVG",
     pinConnections: [
       { mcuPin: "PB0-PB7 (Pins 1-8)", component: "LEDs (Output)" },
     ],
     code: `#include <avr/io.h>
 
-void delay() 
+void delay(void)
 {
-    unsigned int i, j;
-    for(i = 0; i < 500; i++) {
-        for(j = 0; j < 100; j++); 
-    }
+	volatile unsigned long i;
+
+	for (i = 0; i < 30000; i++)
+	{
+		// Empty loop
+	}
 }
 
 int main(void) 
@@ -517,54 +520,26 @@ int main(void)
     title: "Exp 07: Monitoring PORT PIN",
     category: "Digital I/O",
     order: 7,
-    isFair: false,
+    isFair: true,
     problemStatement:
       "(a) A door sensor (push button switch) is connected to pin PB3 of Port B. An LED is connected to pin PC5 of Port C. Write an AVR C program to monitor the door sensor and turn ON the LED when the door opens.\n\n(b) Read the status of PB0 and PB1 and output the corresponding ASCII character to Port D.",
-    circuitImageUrl: "",
+    circuitImageUrl: "/exp7.SVG",
     pinConnections: [
       { mcuPin: "PB3 (Port B Pin 3)", component: "Door sensor (push button)" },
       { mcuPin: "PC5 (Port C Pin 5)", component: "LED (Output)" },
       { mcuPin: "PB0, PB1", component: "Input pins" },
       { mcuPin: "PORTD", component: "ASCII Output" }
     ],
-    code: `// PROGRAM (a)
-#include <avr/io.h>
-
-int main()
-{
-    DDRB = 0x00;
-    DDRC = 0x20;
-
-    while(1)
-    {
-        if(PINB == 0x08)
-            PORTC = 0x20;
-        else
-            PORTC = 0x00;
-    }
-}
-
-
-// PROGRAM (b)
-#include <avr/io.h>
-
-int main()
-{
-    DDRB = 0x00;
-    DDRD = 0xFF;
-
-    while(1)
-    {
-        if(PINB == 0x00)
-            PORTD = '0';
-        else if(PINB == 0x01)
-            PORTD = '1';
-        else if(PINB == 0x02)
-            PORTD = '2';
-        else if(PINB == 0x03)
-            PORTD = '3';
-    }
-}`,
+    code: [
+      {
+        title: "Program (a) - Door sensor and LED",
+        code: `#include <avr/io.h>\n\nint main()\n{\n    DDRB = 0x00;\n    DDRC = 0x20;\n\n    while(1)\n    {\n        if(PINB == 0x08)\n            PORTC = 0x20;\n        else\n            PORTC = 0x00;\n    }\n}`
+      },
+      {
+        title: "Program (b) - ASCII output based on PB0, PB1",
+        code: `#include <avr/io.h>\n\nint main()\n{\n    DDRB = 0x00;\n    DDRD = 0xFF;\n\n    while(1)\n    {\n        if(PINB == 0x00)\n            PORTD = '0';\n        else if(PINB == 0x01)\n            PORTD = '1';\n        else if(PINB == 0x02)\n            PORTD = '2';\n        else if(PINB == 0x03)\n            PORTD = '3';\n    }\n}`
+      }
+    ],
     codeExplanation: [
       {
         line: "DDRB = 0x00;",
@@ -608,59 +583,23 @@ int main()
     isFair: false,
     problemStatement:
       "(a) A door sensor (push button switch) is connected to pin PB3 of Port B. An LED is connected to pin PC5 of Port C. Write an AVR C program to monitor the door sensor and turn ON the LED when the door opens, using bitwise operators.\n\n(b) Read the status of PB0 and PB1 and output the corresponding ASCII character to Port D, using bitwise operators.",
-    circuitImageUrl: "",
+    circuitImageUrl: "/exp8.SVG",
     pinConnections: [
       { mcuPin: "PB3 (Port B Pin 3)", component: "Door sensor (push button)" },
       { mcuPin: "PC5 (Port C Pin 5)", component: "LED (Output)" },
       { mcuPin: "PB0, PB1", component: "Input pins" },
       { mcuPin: "PORTD", component: "ASCII Output" }
     ],
-    code: `// PROGRAM (a)
-#include <avr/io.h>
-
-int main()
-{
-    // Clear bit 3 in DDRB to configure PB3 as input (0x08 is 00001000)
-    DDRB &= ~0x08;
-    // Set bit 5 in DDRC to configure PC5 as output (0x20 is 00100000)
-    DDRC |= 0x20;
-
-    while(1)
-    {
-        // Check if PB3 is HIGH by masking with 0x08
-        if(PINB & 0x08)
-            PORTC |= 0x20;  // Turn ON LED (Set bit 5)
-        else
-            PORTC &= ~0x20; // Turn OFF LED (Clear bit 5)
-    }
-}
-
-
-// PROGRAM (b)
-#include <avr/io.h>
-
-int main()
-{
-    // Clear bits 0 and 1 in DDRB to configure PB0 and PB1 as input (0x03 is 00000011)
-    DDRB &= ~0x03;
-    // Configure all pins of PORTD as output
-    DDRD = 0xFF;
-
-    while(1)
-    {
-        // Read only PB0 and PB1 using a bitwise AND mask with 0x03
-        unsigned char status = PINB & 0x03;
-
-        if(status == 0x00)
-            PORTD = '0';
-        else if(status == 0x01) // 1
-            PORTD = '1';
-        else if(status == 0x02) // 2
-            PORTD = '2';
-        else if(status == 0x03) // 3
-            PORTD = '3';
-    }
-}`,
+    code: [
+      {
+        title: "Program (a) - Door sensor and LED",
+        code: `#include <avr/io.h>\n\nint main()\n{\n    // Clear bit 3 in DDRB to configure PB3 as input (0x08 is 00001000)\n    DDRB &= ~0x08;\n    // Set bit 5 in DDRC to configure PC5 as output (0x20 is 00100000)\n    DDRC |= 0x20;\n\n    while(1)\n    {\n        // Check if PB3 is HIGH by masking with 0x08\n        if(PINB & 0x08)\n            PORTC |= 0x20;  // Turn ON LED (Set bit 5)\n        else\n            PORTC &= ~0x20; // Turn OFF LED (Clear bit 5)\n    }\n}`
+      },
+      {
+        title: "Program (b) - ASCII output based on PB0, PB1",
+        code: `#include <avr/io.h>\n\nint main()\n{\n    // Clear bits 0 and 1 in DDRB to configure PB0 and PB1 as input (0x03 is 00000011)\n    DDRB &= ~0x03;\n    // Configure all pins of PORTD as output\n    DDRD = 0xFF;\n\n    while(1)\n    {\n        // Read only PB0 and PB1 using a bitwise AND mask with 0x03\n        unsigned char status = PINB & 0x03;\n\n        if(status == 0x00)\n            PORTD = '0';\n        else if(status == 0x01) // 1\n            PORTD = '1';\n        else if(status == 0x02) // 2\n            PORTD = '2';\n        else if(status == 0x03) // 3\n            PORTD = '3';\n    }\n}`
+      }
+    ],
     codeExplanation: [
       {
         line: "DDRB &= ~0x08;",
@@ -704,20 +643,20 @@ int main()
     isFair: false,
     problemStatement:
       "Write an AVR C program to toggle only bit 4 of PORTB continuously without disturbing the states of the other pins on the port.",
-    circuitImageUrl: "",
+    circuitImageUrl: "/exp9.SVG",
     pinConnections: [
       { mcuPin: "PB4 (Port B Pin 4)", component: "LED (Output)" }
     ],
     code: `#include <avr/io.h>
-
-void delay() 
+void delay(void)
 {
-    unsigned int i, j;
-    for(i = 0; i < 1000; i++) {
-        for(j = 0; j < 100; j++); 
-    }
-}
+	volatile unsigned long i;
 
+	for (i = 0; i < 30000; i++)
+	{
+		// Empty loop
+	}
+}
 int main(void)
 {
     // Configure PB4 as output by setting bit 4 of DDRB, leaving others unchanged
@@ -765,10 +704,10 @@ int main(void)
     title: "Exp 10: Packed BCD to ASCII Conversion",
     category: "Data Conversion",
     order: 10,
-    isFair: false,
+    isFair: true,
     problemStatement:
       "Write and execute an AVR C program to convert the packed BCD number 0x29 into its ASCII equivalent and display the ASCII bytes on PORTB and PORTC.",
-    circuitImageUrl: "",
+    circuitImageUrl: "/exp10.SVG",
     pinConnections: [
       { mcuPin: "PORTB", component: "ASCII output for lower nibble ('9')" },
       { mcuPin: "PORTC", component: "ASCII output for upper nibble ('2')" }
@@ -847,10 +786,10 @@ int main(void)
     title: "Exp 11: ASCII to Packed BCD Conversion",
     category: "Data Conversion",
     order: 11,
-    isFair: false,
+    isFair: true,
     problemStatement:
       "Write and execute an AVR C program to convert the ASCII digits '4' and '7' into a packed BCD number and display the packed BCD value on PORTB.",
-    circuitImageUrl: "",
+    circuitImageUrl: "/exp11.SVG",
     pinConnections: [
       { mcuPin: "PORTB", component: "LEDs to display packed BCD output (0x47)" }
     ],
@@ -922,21 +861,23 @@ int main(void)
     title: "Exp 12: Serial Transmission of 44H (LSB First)",
     category: "Serial Communication",
     order: 12,
-    isFair: false,
+    isFair: true,
     problemStatement:
       "Write and execute an AVR C program to transmit hexadecimal value 44H serially through PORTC Pin 3 by sending the Least Significant Bit (LSB) first.",
-    circuitImageUrl: "",
+    circuitImageUrl: "/exp12.SVG",
     pinConnections: [
       { mcuPin: "PC3 (Port C Pin 3)", component: "Serial output line" }
     ],
     code: `#include <avr/io.h>
 
-void delay() 
+void delay(void)
 {
-    unsigned int i, j;
-    for(i = 0; i < 1000; i++) {
-        for(j = 0; j < 100; j++); 
-    }
+	volatile unsigned long i;
+
+	for (i = 0; i < 30000; i++)
+	{
+		// Empty loop
+	}
 }
 
 int main(void)
@@ -1010,21 +951,23 @@ int main(void)
     title: "Exp 13: Serial Transmission of 44H (MSB First)",
     category: "Serial Communication",
     order: 13,
-    isFair: false,
+    isFair: true,
     problemStatement:
       "Write and execute an AVR C program to transmit the hexadecimal value 44H serially through PORTC Pin 3 by sending the Most Significant Bit (MSB) first.",
-    circuitImageUrl: "",
+    circuitImageUrl: "/exp13.SVG",
     pinConnections: [
       { mcuPin: "PC3 (Port C Pin 3)", component: "Serial output line" }
     ],
     code: `#include <avr/io.h>
 
-void delay() 
+void delay(void)
 {
-    unsigned int i, j;
-    for(i = 0; i < 1000; i++) {
-        for(j = 0; j < 100; j++); 
-    }
+	volatile unsigned long i;
+
+	for (i = 0; i < 30000; i++)
+	{
+		// Empty loop
+	}
 }
 
 int main(void)
@@ -1102,10 +1045,10 @@ int main(void)
     title: "Exp 14: Timer0 Delay Generation (Normal Mode)",
     category: "Timers & Counters",
     order: 14,
-    isFair: false,
+    isFair: true,
     problemStatement:
       "Write and execute an AVR C program to toggle all bits of PORTB continuously with a delay generated using Timer0 in Normal Mode without a prescaler.",
-    circuitImageUrl: "",
+    circuitImageUrl: "/exp14.SVG",
     pinConnections: [
       { mcuPin: "PORTB", component: "LEDs to visualize toggling output" }
     ],
@@ -1196,20 +1139,20 @@ void T0Delay()
     isFair: false,
     problemStatement:
       "Write and execute an AVR C program to toggle all bits of PORTB continuously with a delay generated using a software 'for' loop.",
-    circuitImageUrl: "",
+    circuitImageUrl: "/exp15.SVG",
     pinConnections: [
       { mcuPin: "PORTB", component: "LEDs to visualize toggling output" }
     ],
     code: `#include <avr/io.h>
 
-void delay()
+void delay(void)
 {
-    unsigned int i, j;
-    // Nested for-loop to waste CPU cycles and generate a delay
-    for(i = 0; i < 1000; i++)
-    {
-        for(j = 0; j < 100; j++);
-    }
+	volatile unsigned long i;
+
+	for (i = 0; i < 30000; i++)
+	{
+		// Empty loop
+	}
 }
 
 int main(void)
@@ -1259,7 +1202,7 @@ int main(void)
     isFair: false,
     problemStatement:
       "Write and execute an AVR C program to toggle all bits of PORTB continuously with a delay generated using the built-in _delay_ms() function.",
-    circuitImageUrl: "",
+    circuitImageUrl: "/exp16.SVG",
     pinConnections: [
       { mcuPin: "PORTB", component: "LEDs to visualize toggling output" }
     ],
@@ -1319,10 +1262,10 @@ int main(void)
     title: "Exp 17: Toggle PORTB using Timer0 in CTC Mode",
     category: "Timers & Counters",
     order: 17,
-    isFair: false,
+    isFair: true,
     problemStatement:
       "Write and execute an AVR C program to toggle all bits of PORTB continuously with a delay generated using Timer0 in CTC (Clear Timer on Compare Match) Mode with no prescaler.",
-    circuitImageUrl: "",
+    circuitImageUrl: "/exp17.SVG",
     pinConnections: [
       { mcuPin: "PORTB", component: "LEDs to visualize toggling output" }
     ],
@@ -1410,10 +1353,10 @@ void T0Delay(void)
     title: "Exp 18: Timer0 As Counter",
     category: "Timers & Counters",
     order: 18,
-    isFair: false,
+    isFair: true,
     problemStatement:
       "Design and implement an AVR program using ATmega32 where Timer0 is configured in counter mode to count external pulses applied to the T0 pin (PD4). The current 8-bit count value must be continuously displayed on PORTB using LEDs.",
-    circuitImageUrl: "",
+    circuitImageUrl: "/exp18.SVG",
     pinConnections: [
       { mcuPin: "PD4 (T0 Pin)", component: "External pulse source (Push button/Clock)" },
       { mcuPin: "PORTB", component: "LEDs to display the 8-bit count" }
@@ -1423,7 +1366,7 @@ void T0Delay(void)
 
 void main(void)
 {
-    DDRB = 0xFF;         // Set PORTB as output (to display count)
+    DDRC = 0xFF;         // Set PORTB as output (to display count)
     DDRD &= ~(1 << PD4); // Set PD4 (T0) as input for external pulses
 
     TCCR0 = 6;           // Timer0: External clock source on T0 pin, falling edge
@@ -1431,7 +1374,7 @@ void main(void)
 
     while (1)
     {
-        PORTB = TCNT0;   // Output current count to PORTB
+        PORTC = TCNT0;   // Output current count to PORTB
     }
 }`,
     codeExplanation: [
@@ -1553,10 +1496,10 @@ int main(void)
     title: "Exp 20: Timer0 Overflow Interrupt to Generate Square Wave (With Shift Operators)",
     category: "Interrupts",
     order: 20,
-    isFair: false,
+    isFair: true,
     problemStatement:
       "Write an AVR C program to generate a square wave on PB5 using Timer0 overflow interrupt while continuously transferring data from PORTC to PORTD in the main loop.",
-    circuitImageUrl: "",
+    circuitImageUrl: "/exp20.SVG",
     pinConnections: [
       { mcuPin: "PB5", component: "Oscilloscope/LED to observe square wave" },
       { mcuPin: "PORTC", component: "Input switches/sensors" },
@@ -1670,7 +1613,7 @@ ISR(TIMER0_OVF_vect)
     isFair: false,
     problemStatement:
       "Write an AVR C program to read input from PORTC and send it to PORTD continuously. Use Timer0 overflow interrupt to toggle PB0 continuously (Square wave generator).",
-    circuitImageUrl: "",
+    circuitImageUrl: "/exp22.png",
     pinConnections: [
       { mcuPin: "PB0", component: "LED/Oscilloscope" },
       { mcuPin: "PORTC", component: "Input" },
@@ -1784,10 +1727,10 @@ ISR(TIMER0_OVF_vect)
     title: "Exp 24: Interfacing 16×2 LCD with ATmega32 in 8-bit Mode",
     category: "Interfacing",
     order: 24,
-    isFair: false,
+    isFair: true,
     problemStatement:
       "Write an AVR C program to interface a 16×2 alphanumeric LCD (14-pin) with the ATmega32 microcontroller in 8-bit mode and display the message 'WELCOME TO SSM'.",
-    circuitImageUrl: "",
+    circuitImageUrl: "/exp24.SVG",
     pinConnections: [
       { mcuPin: "PORTC", component: "LCD Data Pins (D0 - D7)" },
       { mcuPin: "PD0", component: "LCD Register Select (RS)" },
@@ -1878,7 +1821,7 @@ int main(void)
     isFair: false,
     problemStatement:
       "Write an AVR C program to interface a 16×2 alphanumeric LCD display (14-pin) in 8-bit mode with ATmega32 and display the message 'WELCOME TO SSM' with a continuous moving/scrolling effect.",
-    circuitImageUrl: "",
+    circuitImageUrl: "/exp25.SVG",
     pinConnections: [
       { mcuPin: "PORTC", component: "LCD Data Pins (D0 - D7)" },
       { mcuPin: "PD0", component: "LCD Register Select (RS)" },

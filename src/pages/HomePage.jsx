@@ -17,6 +17,16 @@ const HomePage = () => {
   const [filterMode, setFilterMode] = useState('Observation');
   const [reviewedQuestions, setReviewedQuestions] = useLocalStorage('reviewed-questions', []);
 
+  
+  const fairIndexMap = useMemo(() => {
+    const map = {};
+    const fairQs = questions.filter(q => q.isFair);
+    fairQs.forEach((q, index) => {
+      map[q.id] = index + 1;
+    });
+    return map;
+  }, [questions]);
+
   const categories = useMemo(() => getCategories(), []);
 
   const filteredQuestions = useMemo(() => {
@@ -111,14 +121,26 @@ const HomePage = () => {
         </div>
       ) : (
         <div className={styles.grid}>
-          {filteredQuestions.map((question) => (
-            <QuestionCard
-              key={question.id}
-              question={question}
-              isReviewed={reviewedQuestions.includes(question.id)}
-              onToggleReview={toggleReview}
-            />
-          ))}
+          {filteredQuestions.map((question) => {
+            let customTitle = question.title;
+            if (filterMode === 'Fair') {
+              const fairNum = fairIndexMap[question.id];
+              if (fairNum) {
+                customTitle = question.title.replace(/Exp \d+:/, `Exp ${fairNum}:`);
+              }
+            }
+
+            return (
+              <QuestionCard
+                key={question.id}
+                question={question}
+                isReviewed={reviewedQuestions.includes(question.id)}
+                onToggleReview={toggleReview}
+                displayTitle={customTitle}
+                isFairMode={filterMode === 'Fair'}
+              />
+            );
+          })}
         </div>
       )}
     </div>

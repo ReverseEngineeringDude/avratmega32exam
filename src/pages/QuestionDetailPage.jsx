@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { useParams, useNavigate, Link } from 'react-router-dom';
+import { useParams, useNavigate, Link, useLocation } from 'react-router-dom';
 import { ArrowLeft, ChevronLeft, ChevronRight, CheckCircle, BookOpen } from 'lucide-react';
 import useQuestion from '../hooks/useQuestion';
 import useQuestions from '../hooks/useQuestions';
@@ -32,10 +32,26 @@ const QuestionDetailPage = () => {
     });
   };
 
-  // Find prev/next questions
-  const currentIndex = allQuestions.findIndex((q) => q.id === id);
-  const prevQuestion = currentIndex > 0 ? allQuestions[currentIndex - 1] : null;
-  const nextQuestion = currentIndex < allQuestions.length - 1 ? allQuestions[currentIndex + 1] : null;
+  const location = useLocation();
+  const isFairMode = new URLSearchParams(location.search).get('mode') === 'fair';
+  const displayList = isFairMode ? allQuestions.filter(q => q.isFair) : allQuestions;
+  
+  const currentIndex = displayList.findIndex(q => q.id === id);
+  const prevQuestion = currentIndex > 0 ? displayList[currentIndex - 1] : null;
+  const nextQuestion = currentIndex < displayList.length - 1 ? displayList[currentIndex + 1] : null;
+
+  let displayTitle = question?.title;
+  if (isFairMode && question) {
+    displayTitle = question.title.replace(/Exp \d+:/, `Exp ${currentIndex + 1}:`);
+  }
+
+  const getLink = (qId) => isFairMode ? `/question/${qId}?mode=fair` : `/question/${qId}`;
+  
+  const formatTitle = (q, idx) => {
+    if (!q) return '';
+    if (isFairMode) return q.title.replace(/Exp \d+:/, `Exp ${idx + 1}:`);
+    return q.title;
+  };
 
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -56,7 +72,7 @@ const QuestionDetailPage = () => {
       {/* Header */}
       <header className={styles.header}>
         <span className={styles.categoryBadge}>{question.category}</span>
-        <h1 className={styles.title}>{question.title}</h1>
+        <h1 className={styles.title}>{displayTitle}</h1>
         <p className={styles.problemStatement}>{question.problemStatement}</p>
         <button
           className={`${styles.reviewToggle} ${isReviewed ? styles.reviewedBtn : ''}`}
@@ -90,7 +106,15 @@ const QuestionDetailPage = () => {
           <BookOpen size={20} />
           Complete AVR C Code
         </h2>
-        <CodeBlock code={question.code} title={`${question.title} — Atmel Studio`} />
+        {Array.isArray(question.code) ? (
+          <div className={styles.codeGroup}>
+            {question.code.map((item, index) => (
+              <CodeBlock key={index} code={item.code} title={item.title} />
+            ))}
+          </div>
+        ) : (
+          <CodeBlock code={question.code} title={`${question.title} — Atmel Studio`} />
+        )}
       </section>
 
       {/* Section: Code Explanation */}
@@ -111,21 +135,21 @@ const QuestionDetailPage = () => {
       {/* Prev / Next Navigation */}
       <nav className={styles.pagination} aria-label="Question navigation">
         {prevQuestion ? (
-          <Link to={`/question/${prevQuestion.id}`} className={styles.pageLink}>
+          <Link to={getLink(prevQuestion.id)} className={styles.pageLink}>
             <ChevronLeft size={18} />
             <div>
               <span className={styles.pageLinkLabel}>Previous</span>
-              <span className={styles.pageLinkTitle}>{prevQuestion.title}</span>
+              <span className={styles.pageLinkTitle}>{formatTitle(prevQuestion, currentIndex - 1)}</span>
             </div>
           </Link>
         ) : (
           <div />
         )}
         {nextQuestion ? (
-          <Link to={`/question/${nextQuestion.id}`} className={`${styles.pageLink} ${styles.pageLinkRight}`}>
+          <Link to={getLink(nextQuestion.id)} className={`${styles.pageLink} ${styles.pageLinkRight}`}>
             <div>
               <span className={styles.pageLinkLabel}>Next</span>
-              <span className={styles.pageLinkTitle}>{nextQuestion.title}</span>
+              <span className={styles.pageLinkTitle}>{formatTitle(nextQuestion, currentIndex + 1)}</span>
             </div>
             <ChevronRight size={18} />
           </Link>
