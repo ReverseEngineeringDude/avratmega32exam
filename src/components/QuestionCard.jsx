@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { CheckCircle, ChevronRight } from 'lucide-react';
+import { CheckCircle, ChevronRight, Cpu, BadgeCheck } from 'lucide-react';
 import styles from './QuestionCard.module.css';
 
 const categoryColors = {
@@ -16,16 +16,51 @@ const categoryColors = {
 
 const QuestionCard = ({ question, isReviewed, onToggleReview, displayTitle, isFairMode }) => {
   const tagColor = categoryColors[question.category] || '#4361ee';
+  
+  const rawTitle = displayTitle || question.title;
+  let expNumber = '';
+  let mainTitle = rawTitle;
+
+  const match = rawTitle.match(/^(Exp\s*\d+):?\s*(.*)$/i);
+  if (match) {
+    expNumber = match[1];
+    mainTitle = match[2];
+  }
 
   return (
     <div className={styles.card}>
+      <Link to={`/question/${question.id}${isFairMode ? '?mode=fair' : ''}`} className={styles.imageLink}>
+        {question.circuitImageUrl ? (
+          <div className={styles.imagePreviewWrapper}>
+            <img 
+              src={question.circuitImageUrl} 
+              alt={`${question.title} Circuit`} 
+              className={styles.imagePreview} 
+              loading="lazy"
+            />
+          </div>
+        ) : (
+          <div className={styles.imagePlaceholder}>
+             <Cpu size={48} className={styles.placeholderIcon} />
+          </div>
+        )}
+      </Link>
+
       <div className={styles.cardHeader}>
-        <span
-          className={styles.categoryTag}
-          style={{ backgroundColor: `${tagColor}20`, color: tagColor, borderColor: `${tagColor}40` }}
-        >
-          {question.category}
-        </span>
+        <div className={styles.tagsContainer}>
+          <span
+            className={styles.categoryTag}
+            style={{ backgroundColor: `${tagColor}20`, color: tagColor, borderColor: `${tagColor}40` }}
+          >
+            {question.category}
+          </span>
+          {expNumber && (
+            <span className={styles.expTag}>
+              <BadgeCheck size={14} strokeWidth={2.5} />
+              {expNumber}
+            </span>
+          )}
+        </div>
         <button
           className={`${styles.reviewBtn} ${isReviewed ? styles.reviewed : ''}`}
           onClick={(e) => {
@@ -41,7 +76,7 @@ const QuestionCard = ({ question, isReviewed, onToggleReview, displayTitle, isFa
       </div>
 
       <Link to={`/question/${question.id}${isFairMode ? '?mode=fair' : ''}`} className={styles.cardLink}>
-        <h3 className={styles.title}>{displayTitle || question.title}</h3>
+        <h3 className={styles.title}>{mainTitle}</h3>
         <p className={styles.statement}>
           {question.problemStatement?.substring(0, 120)}
           {question.problemStatement?.length > 120 ? '...' : ''}

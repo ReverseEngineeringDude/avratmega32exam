@@ -1424,7 +1424,7 @@ void main(void)
     isFair: false,
     problemStatement:
       "Write an AVR C program to extend the 8-bit Timer0 into a 16-bit counter using the Timer0 overflow flag (TOV0). Count external pulses and display the 16-bit count on PORTC (lower 8 bits) and PORTD (upper 8 bits).",
-    circuitImageUrl: "",
+    circuitImageUrl: "/exp19.SVG",
     pinConnections: [
       { mcuPin: "PB0 (T0 Pin)", component: "External pulse source (Push button/Clock)" },
       { mcuPin: "PORTC", component: "LEDs to display lower 8 bits of count" },
@@ -1434,27 +1434,27 @@ void main(void)
 
 int main(void)
 {
-    DDRC = 0xFF;  // Lower 8 bits of the 16-bit count
-    DDRD = 0xFF;  // Upper 8 bits of the 16-bit count
-    PORTB = 0x01; // Enable pull-up resistor on PB0 (T0 pin)
-    
-    TCNT0 = 0x00; // Clear Timer0 counter
-    TCCR0 = 0x06; // External clock on T0 (falling edge)
-    PORTD = 0x00; // Initialize upper byte to 0
+	DDRC = 0xFF;  // Lower 8 bits of the 16-bit count
+	DDRD = 0xFF;  // Upper 8 bits of the 16-bit count
+	PORTB = 0x01; // Enable pull-up resistor on PB0 (T0 pin)
+	
+	TCNT0 = 0x00; // Clear Timer0 counter
+	TCCR0 = 0x06; // External clock on T0 (falling edge)
+	PORTD = 0x00; // Initialize upper byte to 0
 
-    while(1)
-    {
-        PORTC = TCNT0; // Continuously display lower byte
+	while(1)
+	{
+		PORTC = TCNT0; // Continuously display lower byte
 
-        // Check if Timer0 has overflowed (counted from 255 to 0)
-        if(TIFR & (1 << TOV0))
-        {
-            TIFR = (1 << TOV0); // Clear overflow flag by writing 1
-            PORTD++;            // Increment upper byte
-        }
-    }
+		// Check if Timer0 has overflowed (counted from 255 to 0)
+		if(TIFR & (1 << TOV0))
+		{
+			TIFR = (1 << TOV0); // Clear overflow flag by writing 1
+			PORTD++;            // Increment upper byte
+		}
+	}
 
-    return 0;
+	return 0;
 }`,
     codeExplanation: [
       {
@@ -1462,12 +1462,24 @@ int main(void)
         explanation: "Since DDRB for PB0 is 0 by default (input), writing 1 to PORTB enables the internal pull-up resistor on the T0 pin, preventing it from floating."
       },
       {
+        line: "TCNT0 = 0x00;",
+        explanation: "Initializes the Timer0 counter register to start counting from 0."
+      },
+      {
         line: "TCCR0 = 0x06;",
         explanation: "Configures Timer0 to act as a counter clocked by falling edges on the external T0 pin."
       },
       {
+        line: "PORTC = TCNT0;",
+        explanation: "Continuously outputs the current 8-bit count from the Timer0 register to PORTC (the lower 8 bits of the 16-bit counter)."
+      },
+      {
         line: "if(TIFR & (1 << TOV0))",
         explanation: "Checks if the Timer0 Overflow Flag is set. This happens every time TCNT0 reaches 255 and rolls over to 0."
+      },
+      {
+        line: "TIFR = (1 << TOV0);",
+        explanation: "Clears the overflow flag. In AVR, hardware interrupt flags are cleared by writing a logical '1' to them."
       },
       {
         line: "PORTD++;",
@@ -1478,6 +1490,14 @@ int main(void)
       {
         snippet: "TIFR = (1 << TOV0);",
         note: "Always remember that hardware interrupt flags in AVR are cleared by writing a logical '1' to them, not '0'."
+      },
+      {
+        snippet: "PORTC = TCNT0;",
+        note: "Directly reading the timer counter register allows you to display the real-time count without waiting for an interrupt."
+      },
+      {
+        snippet: "PORTD++;",
+        note: "Software-based cascading: By incrementing a register every time the 8-bit timer overflows, we effectively create a 16-bit counter."
       }
     ],
     vivaQuestions: [
@@ -1556,7 +1576,7 @@ ISR(TIMER0_OVF_vect)
     isFair: false,
     problemStatement:
       "Write a simplified AVR C program to generate a square wave on PB5 using Timer0 overflow interrupt without using shift operators, while continuously transferring data from PORTC to PORTD.",
-    circuitImageUrl: "",
+    circuitImageUrl: "/exp21.SVG",
     pinConnections: [
       { mcuPin: "PB5", component: "Oscilloscope/LED to observe square wave" },
       { mcuPin: "PORTC", component: "Input switches/sensors" },
@@ -1572,7 +1592,7 @@ int main()
     DDRD = 0xFF;      // PORTD as output
 
     TCNT0 = 0x00;     // Start Timer0 from 0
-    TCCR0 = 0x01;     // Normal mode, No prescaler
+	TCCR0 = 0x05;       // Normal mode, prescaler = 1024
     TIMSK = 0x01;     // Enable Timer0 Overflow Interrupt
     sei();            // Enable Global Interrupt
 
@@ -1588,14 +1608,38 @@ ISR(TIMER0_OVF_vect)
 }`,
     codeExplanation: [
       {
+        line: "TCCR0 = 5;",
+        explanation: "Configures Timer0 in normal mode with a prescaler of 1024. This significantly slows down the timer, allowing for human-observable square wave generation."
+      },
+      {
         line: "TIMSK = 0x01;",
-        explanation: "Enables the Timer0 Overflow Interrupt."
+        explanation: "Enables the Timer0 Overflow Interrupt. When TCNT0 overflows, the processor will jump to the ISR."
+      },
+      {
+        line: "sei();",
+        explanation: "Sets the Global Interrupt Enable bit in the status register, allowing interrupts to be triggered."
+      },
+      {
+        line: "ISR(TIMER0_OVF_vect)",
+        explanation: "The Interrupt Service Routine (ISR) that gets called automatically every time Timer0 overflows."
+      },
+      {
+        line: "PORTB = PORTB ^ 0x20;",
+        explanation: "Uses the bitwise XOR operator to toggle only the 5th bit (PB5), while leaving other bits unchanged. 0x20 is binary 00100000."
       }
     ],
     importantCode: [
       {
         snippet: "0x20",
         note: "Direct hexadecimal value instead of shift operator."
+      },
+      {
+        snippet: "TCCR0 = 5;",
+        note: "Setting the prescaler to 1024 (CS02 and CS00 bits set) is crucial for making the toggle frequency slow enough to observe."
+      },
+      {
+        snippet: "ISR(TIMER0_OVF_vect)",
+        note: "This macro defines the interrupt handler specifically for Timer0 Overflow. The name must match exactly what is defined in <avr/interrupt.h>."
       }
     ],
     vivaQuestions: [
@@ -1613,7 +1657,7 @@ ISR(TIMER0_OVF_vect)
     isFair: false,
     problemStatement:
       "Write an AVR C program to read input from PORTC and send it to PORTD continuously. Use Timer0 overflow interrupt to toggle PB0 continuously (Square wave generator).",
-    circuitImageUrl: "/exp22.png",
+    circuitImageUrl: "/exp22.SVG",
     pinConnections: [
       { mcuPin: "PB0", component: "LED/Oscilloscope" },
       { mcuPin: "PORTC", component: "Input" },
@@ -1623,38 +1667,66 @@ ISR(TIMER0_OVF_vect)
 #include <avr/io.h>
 #include <avr/interrupt.h>
 
-void main(void)
+int main(void)
 {
-    DDRC = 0x00;     // PORTC as input
-    DDRD = 0xFF;     // PORTD as output
-    DDRB = 0x01;     // PB0 as output (LED)
+	DDRC = 0x00;     // PORTC as input
+	DDRD = 0xFF;     // PORTD as output
+	DDRB = 0x01;     // PB0 as output (LED)
 
-    TCNT0 = 0;       // Start Timer0 from 0
-    TCCR0 = 1;       // Normal mode, no prescaler
-    TIMSK = 1;       // Enable Timer0 overflow interrupt
-    sei();           // Enable global interrupts
+	TCNT0 = 0;       // Start Timer0 from 0
+	TCCR0 = 0x05;       // Normal mode, prescaler = 1024
+	TIMSK = 1;       // Enable Timer0 overflow interrupt
+	sei();           // Enable global interrupts
 
-    while (1)
-    {
-        PORTD = PINC;   // Read from PORTC and send to PORTD
-    }
+	while (1)
+	{
+		PORTD = PINC;   // Read from PORTC and send to PORTD
+	}
 }
 
 // Interrupt Service Routine – Timer0 Overflow
 ISR(TIMER0_OVF_vect)
 {
-    PORTB ^= 0x01;   // Toggle PB0
+	PORTB ^= 0x01;   // Toggle PB0
 }`,
     codeExplanation: [
       {
+        line: "#define F_CPU 1000000UL",
+        explanation: "Defines the CPU clock frequency (1 MHz). Useful if delay functions are used, and clearly documents the intended clock speed."
+      },
+      {
+        line: "TCCR0 = 5;",
+        explanation: "Sets Timer0 to normal mode with a prescaler of 1024, slowing down the timer count to create a visible toggle effect."
+      },
+      {
+        line: "TIMSK = 1;",
+        explanation: "Enables the Timer0 overflow interrupt. The TOIE0 bit (bit 0) is set to 1."
+      },
+      {
+        line: "sei();",
+        explanation: "Enables global interrupts, allowing the ISR to execute when the timer overflows."
+      },
+      {
+        line: "PORTD = PINC;",
+        explanation: "Reads the current digital state of the input pins on PORTC and directly writes them out to PORTD continuously."
+      },
+      {
         line: "PORTB ^= 0x01;",
-        explanation: "Toggles PB0 using XOR."
+        explanation: "Toggles PB0 using XOR. 0x01 corresponds to binary 00000001."
       }
     ],
     importantCode: [
       {
         snippet: "sei()",
-        note: "Enables global interrupts."
+        note: "Enables global interrupts. Without this, the ISR will never execute even if the specific timer interrupt (TIMSK) is enabled."
+      },
+      {
+        snippet: "PORTB ^= 0x01;",
+        note: "Using the XOR assignment operator (^=) is the standard and most efficient way to toggle specific bits without affecting others."
+      },
+      {
+        snippet: "PORTD = PINC;",
+        note: "Demonstrates continuous polling inside the main loop while the ISR handles the timing asynchronously."
       }
     ],
     vivaQuestions: [
@@ -1672,47 +1744,72 @@ ISR(TIMER0_OVF_vect)
     isFair: false,
     problemStatement:
       "Write an AVR C program to read input from PORTC and send it to PORTD continuously. Use Timer0 overflow interrupt to toggle all bits of PORTB continuously.",
-    circuitImageUrl: "",
+    circuitImageUrl: "/exp23.SVG",
     pinConnections: [
       { mcuPin: "PORTB", component: "LEDs (Toggle output)" },
       { mcuPin: "PORTC", component: "Input switches/sensors" },
       { mcuPin: "PORTD", component: "Output LEDs (mirrors PORTC)" }
     ],
-    code: `#include <avr/io.h>
+    code: `#define F_CPU 1000000UL
+#include <avr/io.h>
 #include <avr/interrupt.h>
 
 int main(void)
 {
-    DDRC = 0x00;     // PORTC as input
-    DDRD = 0xFF;     // PORTD as output
-    DDRB = 0xFF;     // All PORTB pins as output
+	DDRC = 0x00;     // PORTC as input
+	DDRD = 0xFF;     // PORTD as output
+	DDRB = 0xFF;     // All PORTB pins as output
 
-    TCNT0 = 0;       // Start Timer0 from 0
-    TCCR0 = 1;       // Normal mode, no prescaler
-    TIMSK = 1;       // Enable Timer0 overflow interrupt
-    sei();           // Enable global interrupts
+	TCNT0 = 0;       // Start Timer0 from 0
+	TCCR0 = 0x05;       // Normal mode, prescaler = 1024
+	TIMSK = 1;       // Enable Timer0 overflow interrupt
+	sei();           // Enable global interrupts
 
-    while (1)
-    {
-        PORTD = PINC;   // Read from PORTC and send to PORTD
-    }
-    return 0;
+	while (1)
+	{
+		PORTD = PINC;   // Read from PORTC and send to PORTD
+	}
 }
 
+// Interrupt Service Routine – Timer0 Overflow
 ISR(TIMER0_OVF_vect)
 {
-    PORTB = ~PORTB;   // Toggle all bits of PORTB
+	PORTB = ~PORTB;   // Toggle all bits of PORTB
 }`,
     codeExplanation: [
       {
+        line: "TCCR0 = 5;",
+        explanation: "Configures the Timer0 prescaler to 1024, stretching the timer duration."
+      },
+      {
+        line: "TIMSK = 1;",
+        explanation: "Activates the Timer0 overflow interrupt."
+      },
+      {
+        line: "sei();",
+        explanation: "Enables global interrupts so the processor will respond to the timer overflow."
+      },
+      {
+        line: "PORTD = PINC;",
+        explanation: "Continuously mirrors the inputs from PORTC to the outputs on PORTD."
+      },
+      {
         line: "PORTB = ~PORTB;",
-        explanation: "Using the bitwise NOT operator (~) inverts all 8 bits of PORTB at once."
+        explanation: "Using the bitwise NOT operator (~) inverts all 8 bits of PORTB at once (e.g. 11110000 becomes 00001111)."
       }
     ],
     importantCode: [
       {
         snippet: "PORTB = ~PORTB;",
         note: "This is a quick way to toggle an entire 8-bit port, turning all 0s to 1s and 1s to 0s."
+      },
+      {
+        snippet: "TIMSK = 1;",
+        note: "Writing 1 sets the TOIE0 (Timer/Counter0 Overflow Interrupt Enable) bit, instructing the AVR to trigger an interrupt on overflow."
+      },
+      {
+        snippet: "PORTD = PINC;",
+        note: "Reads a whole byte from the input port (PORTC) and copies it to the output port (PORTD) in a single clock cycle."
       }
     ],
     vivaQuestions: [
